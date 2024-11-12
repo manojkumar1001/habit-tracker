@@ -1,27 +1,23 @@
-// frontend/src/App.js
 import React from 'react';
-import { gql, useQuery } from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import HabitList from './components/HabitList';
+import AddHabit from './components/AddHabit';
 
-// Define a basic GraphQL query
-const HELLO_QUERY = gql`
-  query {
-    hello
-  }
-`;
+const client = new ApolloClient({
+  uri: 'http://localhost:4000/graphql',
+  cache: new InMemoryCache(),
+});
 
-const App = () => {
-  // Use Apollo's useQuery hook to run the query
-  const { loading, error, data } = useQuery(HELLO_QUERY);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
-
+function App() {
   return (
-    <div>
-      <h1>GraphQL Test</h1>
-      <p>{data.hello}</p>
-    </div>
+    <ApolloProvider client={client}>
+      <div className="App">
+        <h1>Habit Tracker</h1>
+        <AddHabit />
+        <HabitList />
+      </div>
+    </ApolloProvider>
   );
-};
+}
 
 export default App;
