@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { ADD_HABIT } from '../graphql/mutations';
 import { GET_HABITS } from '../graphql/queries';
+import { TextField, Button, Box, Typography } from '@mui/material';
 
 const AddHabit = () => {
   const [name, setName] = useState('');
@@ -9,32 +10,57 @@ const AddHabit = () => {
   const [addHabit] = useMutation(ADD_HABIT, {
     refetchQueries: [{ query: GET_HABITS }],
     onCompleted: () => {
-      setName(''); // Clear input fields
+      setName('');
       setDescription('');
     },
   });
 
   const handleAddHabit = () => {
-    addHabit({
-      variables: { name, description },
-    });
+    if (name) {
+      addHabit({ variables: { name, description } });
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); // Prevents form submission refresh
+      handleAddHabit();
+    }
   };
 
   return (
-    <div>
-      <h3>Add Habit</h3>
-      <input
-        placeholder="Habit name"
+    <Box component="form" sx={{ mt: 2 }} noValidate autoComplete="off">
+      <Typography variant="h6" gutterBottom>
+        Add a New Habit
+      </Typography>
+      <TextField
+        label="Habit Name"
+        variant="outlined"
+        fullWidth
+        margin="normal"
         value={name}
         onChange={(e) => setName(e.target.value)}
+        onKeyPress={handleKeyPress} // Listen for Enter key
       />
-      <input
-        placeholder="Description"
+      <TextField
+        label="Description"
+        variant="outlined"
+        fullWidth
+        margin="normal"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
+        onKeyPress={handleKeyPress} // Listen for Enter key
       />
-      <button onClick={handleAddHabit}>Add Habit</button>
-    </div>
+      <Button
+        variant="contained"
+        color="primary"
+        fullWidth
+        sx={{ mt: 2 }}
+        onClick={handleAddHabit}
+      >
+        Add Habit
+      </Button>
+    </Box>
   );
 };
 
